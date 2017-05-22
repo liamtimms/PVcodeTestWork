@@ -29,13 +29,17 @@ void backbone(void)
   double readGradRatio,sliceGradRatio;
   double dval;
   int dim;
+  /* int dim,seg_size=1 is used in the afi sequence */
 
   DB_MSG(("-->backbone"));
 
   /* update nuclei parameter group                            */
 
   STB_UpdateNuclei(No);
-
+  
+  /* AFI sequence CHANGE */
+  dim=PTB_GetSpatDim();
+  HandleParameterVisibility(dim);
 
   /* update encoding parameter group                          */
  
@@ -46,6 +50,20 @@ void backbone(void)
     Yes,                /* allow PI ref lines in 2nd dim  */
     Yes,                /* partial ft in 2nd dim */
     &PVM_EchoPosition); /* partial ft in 1nd dim */
+    
+    /* *************************************
+     * AFI VERSION
+     * 
+     * STB_UpdateEncoding(
+     *  dim,             /* dimension     
+     *  PVM_Matrix,      /* image size
+     *  &seg_size,       /* segment size
+     *  SEG_SEQUENTIAL,     /* segmenting mode    
+     *  Yes,                /* allow PI in 2nd dim 
+     *  Yes,                /* allow PI ref lines in 2nd dim 
+     *  Yes);                /* partial ft in 2nd dim
+     */
+     
 
 
   /* update parameters controlling the data sampling period   */
@@ -58,6 +76,12 @@ void backbone(void)
   /* update excitation pulse                                  */  
   
   STB_UpdateRFPulse("ExcPulse1",1,PVM_DeriveGains,Conventional);
+  
+   /* *************************************
+     * AFI VERSION
+     * UpdateRFPulses(PVM_DeriveGains,PVM_Nucleus1);
+     * PVM_ExcPulseAngle = ExcPulse.FlipAngle;
+     */
   
   
   /*  final handling of PVM_NRepetitions by range checker
@@ -104,6 +128,23 @@ void backbone(void)
                           maxPerPackage,
                           minSliceThick,
                           1.0); /* sliceFovRatio in 3D */
+                          
+  /* ********************************
+   * update geometry parameters
+   * AFI VERSION
+   * STB_UpdateStandardInplaneGeoPars(minFOV,2);
+   * 
+   * if(dim == 3)
+   * {
+   * 	PVM_SliceThick=PVM_Fov[2];
+   * 	STB_UpdateSliceGeoPars(0,0,1,minSliceThick);
+   * }
+   * else
+   * {
+   * 	STB_UpdateSliceGeoPars(0,0,0,minSliceThick);
+   * }
+   * 
+   */
 
 
   /* calculate gradients in logical directions                */
@@ -114,7 +155,20 @@ void backbone(void)
 
   /*  update sequence timing                                  */
   UpdateEchoTime();
-  UpdateRepetitionTime();
+  
+  /* Here we have major changes for the AFI sequence to handle 
+   * the two TRs
+   */
+   
+  //UpdateRepetitionTime();
+  
+  UpdateTR1();
+  UpdateTR2();
+  UpdateTotalTR();
+  
+  //what is this function used in the afi?
+  Local_RFSpoilingRelation(); //can we modify this to do better spoiling
+
 
   PVM_NEchoImages = 1;
 
@@ -141,13 +195,15 @@ void UpdateEchoTime(void)
 
   minte1 = 
     ExcPulse1.Length/2                  +
+    //afi version has just "ExcPulse.Length/2"
     EncGradDur                          +
     igwt                                ;
 
   
   minte2 =
     riseTime                               + 
-    PVM_AcquisitionTime * PVM_EchoPosition/100;
+    PVM_AcquisitionTime * PVM_EchoPosition/100; 
+    //afi version has "EchoPosition" with no "PVM_"
 
 
   PVM_MinEchoTime = minte1+minte2;
@@ -162,6 +218,7 @@ void UpdateEchoTime(void)
 
 void UpdateRepetitionTime(void)
 {
+	//this is the standard TR updating function from the GRE sequence
   int nslices, dim;
   double TotalTime,mindur,riset;
 
@@ -212,6 +269,124 @@ void UpdateRepetitionTime(void)
 
   DB_MSG(("<--UpdateRepetitionTime"));
   return;
+}
+
+//Now we add custom functions to deal with the two TRs of the AFI seq.
+void UpdateTR1(void)
+{
+	//int nslices; dim and
+	// double TotalTime are used in the standard func
+	double mindur, riset;
+	
+	DB_MSG(("-->UpdateTR1"));
+	//nslices = GTB_NumberOfSlices( PVM_NSPacks, PVM_SPackArrNSlices );
+	//nslices not used in original afi 
+
+	
+	riset=CFG_GradientRiseTime();
+	mindur = EncGradDur+riset;
+	mindur = MAX_OF(mindur, PVM_DigEndDelOpt);
+	
+	ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
+	
+  PVM_MinRepetitionTime = 
+    //nslices *
+    (
+      0.011                                             +
+      CFG_GradientRiseTime()                            +
+      CFG_AmplifierEnable()                             +
+      ExcPulse1.Length/2                                +
+      PVM_EchoTime                                      +
+      PVM_AcquisitionTime *(1.0 - PVM_EchoPosition/100) +
+      ReadSpoilGradDur                                  +
+      CFG_InterGradientWaitTime()                       + 
+      0.01    /* ADC_END */
+    );
+    
+    /* note: PVM_MinRepetitionTime section is copied from
+     * UpdateRepetitioTime but the AFI code had 0.020 instead of 0.011
+     * and 0.04 instead of 0.01 with the note that it was necessary
+     * for multichannel acquisition in this function 
+     */
+     
+    afi_TR1 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
+    
+    DB_MSG(("<--UpdateTR1"));
+    return    
+}
+
+void UpdateTR2(void)
+{
+	//int nslices; dim and
+	// double TotalTime are used in the standard func
+	double mindur, riset;
+	
+	DB_MSG(("-->UpdateTR2"));
+	//nslices = GTB_NumberOfSlices( PVM_NSPacks, PVM_SPackArrNSlices );
+	//nslices not used in original afi 
+
+	riset=CFG_GradientRiseTime();
+	mindur = EncGradDur+riset;
+	mindur = MAX_OF(mindur, PVM_DigEndDelOpt);
+	
+	ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
+	
+  PVM_MinRepetitionTime = 
+    //nslices *
+    (
+      0.011                                             +
+      CFG_GradientRiseTime()                            +
+      CFG_AmplifierEnable()                             +
+      ExcPulse1.Length/2                                +
+      PVM_EchoTime                                      +
+      PVM_AcquisitionTime *(1.0 - PVM_EchoPosition/100) +
+      ReadSpoilGradDur                                  +
+      CFG_InterGradientWaitTime()                       + 
+      0.01    /* ADC_END */
+    );
+    
+    /* note: PVM_MinRepetitionTime section is copied from
+     * UpdateRepetitioTime but the AFI code had 0.020 instead of 0.011
+     * and 0.04 instead of 0.01 with the note that it was necessary
+     * for multichannel acquisition in this function 
+     */
+     
+    afi_TR2 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
+    
+    DB_MSG(("<--UpdateTR2"));
+    return    
+}
+
+void UpdateTotalTR(void);
+{
+	int nslices, dim;
+	double TotalTime;
+	
+	DB_MSG(("-->UpdateTotalTR"));
+	
+	nslices=GTB_NumberOfSlices( PVM_NSPacks, PVM_SPackArrNSlices );
+	
+	afi_total_TR = nslices*(afi_TR1+afi_TR2);
+	
+	dim=PTB_GetSpatDim();
+	TotalTime = afi_total_TR *
+				PVM_EncMatrix[1] *
+				PVM_NAverages;
+				
+	if(dim == 3)
+	{
+		TotalTime *= PVM_EncMatrix[2] //wait, what???
+	}
+	
+	PVM_ScanTime = TotalTime; //this line wasn't in the afi but seems
+	//like something that should be here based on the GRE
+	UT_ScabTimeStr(PVM_ScanTimeStr,TotalTime);
+	ParxRelsShowInEditor("PVM_ScanTimeStr");
+	ParxRelsMakeNonEditable("PVM_ScanTimeStr");
+	
+	DB_MSG(("<--UpdateTotalTR"));
+	return
+			
 }
 
 
@@ -270,6 +445,10 @@ void UpdateGeometryMinima( double *minfov,
     ExcPulse1.Rpfac/100     +  /* ExcPulse1                  */
     riseT/2.0;                 /* dephase of ramp down       */
 
+  /* AFI Difference: in the afi version, there is the additional factor 
+   * of ExcPulse.TrimRephase/100
+   * and ExcPulse1.Rpfac/100 appears to be ExcPulse.RephaseFactor/100
+   */  
 
   /* Step 2: Calculate ratio between slice and slice-rephase Grad */
 
@@ -391,7 +570,9 @@ void UpdateFrequencyOffsets( void )
   DB_MSG(("<--UpdateFrequencyOffsets"));
 }
 
-
+/* The AFI sequence ends with a number of local parameter relations
+ * these will be carried over in a following version
+ */ 
 
 
 
