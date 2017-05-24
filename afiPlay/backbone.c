@@ -312,7 +312,7 @@ void UpdateTR1(void)
     afi_TR1 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
     
     DB_MSG(("<--UpdateTR1"));
-    return    
+    return;    
 }
 
 void UpdateTR2(void)
@@ -354,7 +354,7 @@ void UpdateTR2(void)
     afi_TR2 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
     
     DB_MSG(("<--UpdateTR2"));
-    return    
+    return;    
 }
 
 void UpdateTotalTR(void);
@@ -385,7 +385,7 @@ void UpdateTotalTR(void);
 	ParxRelsMakeNonEditable("PVM_ScanTimeStr");
 	
 	DB_MSG(("<--UpdateTotalTR"));
-	return
+	return;
 			
 }
 
