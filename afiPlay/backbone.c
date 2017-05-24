@@ -39,7 +39,7 @@ void backbone(void)
   
   /* AFI sequence CHANGE */
   dim=PTB_GetSpatDim();
-  HandleParameterVisibility(dim);
+  //HandleParameterVisibility(dim);
 
   /* update encoding parameter group                          */
  
@@ -167,7 +167,7 @@ void backbone(void)
   UpdateTotalTR();
   
   //what is this function used in the afi?
-  Local_RFSpoilingRelation(); //can we modify this to do better spoiling
+  //Local_RFSpoilingRelation(); //can we modify this to do better spoiling
 
 
   PVM_NEchoImages = 1;
@@ -357,7 +357,7 @@ void UpdateTR2(void)
     return;    
 }
 
-void UpdateTotalTR(void);
+void UpdateTotalTR(void)
 {
 	int nslices, dim;
 	double TotalTime;
@@ -375,7 +375,7 @@ void UpdateTotalTR(void);
 				
 	if(dim == 3)
 	{
-		TotalTime *= PVM_EncMatrix[2] //wait, what???
+		TotalTime *= PVM_EncMatrix[2]; //wait, what???
 	}
 	
 	PVM_ScanTime = TotalTime; //this line wasn't in the afi but seems

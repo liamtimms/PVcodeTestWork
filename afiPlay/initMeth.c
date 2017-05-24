@@ -81,7 +81,7 @@ void initMeth()
   //RepetitionTimeRange();
   afi_TR1Range();
   afi_TR2Range();
-  afi_total_TRRange
+  afi_total_TRRange();
   AveragesRange();
   EchoTimeRange();
   if(ParxRelsParHasValue("NDummyScans") == No)
