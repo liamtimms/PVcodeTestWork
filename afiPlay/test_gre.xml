@@ -17,9 +17,9 @@ Description: Layout of routine parameter editor for method gre.
             <parameter name="PVM_RepetitionTime"/>
             -->
             
-            <parameter name="afi_TR1"/>
-            <parameter name="afi_TR2"/>
-            <parameter name="afi_total_TR"/>
+            <parameter name="Afi_TR1"/>
+            <parameter name="Afi_TR2"/>
+            <parameter name="Afi_total_TR"/>
             
             <parameter name="PVM_NAverages"/>
             <parameter name="PVM_ScanTimeStr"/>

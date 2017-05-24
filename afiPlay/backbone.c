@@ -309,7 +309,7 @@ void UpdateTR1(void)
      * for multichannel acquisition in this function 
      */
      
-    afi_TR1 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
+    Afi_TR1 = MAX_OF(PVM_MinRepetitionTime,Afi_TR1);
     
     DB_MSG(("<--UpdateTR1"));
     return;    
@@ -351,7 +351,7 @@ void UpdateTR2(void)
      * for multichannel acquisition in this function 
      */
      
-    afi_TR2 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
+    Afi_TR2 = MAX_OF(PVM_MinRepetitionTime,Afi_TR1);
     
     DB_MSG(("<--UpdateTR2"));
     return;    
@@ -366,10 +366,10 @@ void UpdateTotalTR(void)
 	
 	nslices=GTB_NumberOfSlices( PVM_NSPacks, PVM_SPackArrNSlices );
 	
-	afi_total_TR = nslices*(afi_TR1+afi_TR2);
+	Afi_total_TR = nslices*(Afi_TR1+Afi_TR2);
 	
 	dim=PTB_GetSpatDim();
-	TotalTime = afi_total_TR *
+	TotalTime = Afi_total_TR *
 				PVM_EncMatrix[1] *
 				PVM_NAverages;
 				

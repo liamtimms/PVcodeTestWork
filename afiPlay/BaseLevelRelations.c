@@ -384,7 +384,7 @@ void SetInfoParameters( void )
   
   PARX_change_dims("ACQ_repetition_time",1);
   //ACQ_repetition_time[0] = PVM_RepetitionTime;
-  ACQ_repetition_time[0] = afi_total_TR;
+  ACQ_repetition_time[0] = Afi_total_TR;
   
   PARX_change_dims("ACQ_recov_time",1);
   ACQ_recov_time[0] =  
@@ -531,8 +531,8 @@ void PrintTimingInfo(void)
 	  te1,te2,te1+te2,PVM_EchoTime,
 	  te1+te2-PVM_EchoTime));
 
-  DB_MSG(("tr: %f  should be: %f  diff %f\n",tr,afi_total_TR,
-	  tr-afi_total_TR));
+  DB_MSG(("tr: %f  should be: %f  diff %f\n",tr,Afi_total_TR,
+	  tr-Afi_total_TR));
 
   DB_MSG(("<--PrintTimingInfo"));  
 }
