@@ -14,6 +14,7 @@
  * ***************************************************************/
 
 
+
 static const char resid[] = "$Id $ (c) 2007Bruker BioSpin MRI GmbH";
 
 #define DEBUG		0
