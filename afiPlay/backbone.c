@@ -287,7 +287,7 @@ void UpdateTR1(void)
 	mindur = EncGradDur+riset;
 	mindur = MAX_OF(mindur, PVM_DigEndDelOpt);
 	
-	ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
+	//ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
 	
   PVM_MinRepetitionTime = 
     //nslices *
@@ -329,7 +329,7 @@ void UpdateTR2(void)
 	mindur = EncGradDur+riset;
 	mindur = MAX_OF(mindur, PVM_DigEndDelOpt);
 	
-	ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
+	//ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur); //ReadSpoilDur not defined
 	
   PVM_MinRepetitionTime = 
     //nslices *
@@ -380,7 +380,7 @@ void UpdateTotalTR(void)
 	
 	PVM_ScanTime = TotalTime; //this line wasn't in the afi but seems
 	//like something that should be here based on the GRE
-	UT_ScabTimeStr(PVM_ScanTimeStr,TotalTime);
+	//UT_ScabTimeStr(PVM_ScanTimeStr,TotalTime); //undeclared, what is this?
 	ParxRelsShowInEditor("PVM_ScanTimeStr");
 	ParxRelsMakeNonEditable("PVM_ScanTimeStr");
 	
