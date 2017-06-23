@@ -1,0 +1,94 @@
+;===============================================================
+;=
+;= $Source: /pv/CvsTree/pv/gen/src/prg/methods/gre/afi.ppg,v $
+;=
+;= A gradient echo imaging pulse program
+;=
+;= $Id: afi.ppg,v 1.4.2.3 2007/04/25 06:13:43 mawi Exp $
+;===============================================================
+
+
+#include <MRI.include>
+preset off
+
+
+;===========================================================
+;   definition of delays
+;===========================================================
+
+define delay denab
+"denab =  d4 - de"
+
+"l3 = l0 + ds"
+
+INIT_DEVICES
+
+define list<frequency> fq2list = {$ACQ_O2_list}
+
+;===========================================================
+;   declaration of 2d and 3d loop
+;===========================================================
+
+
+lgrad r2d<2d> = L[0]
+zgrad r2d
+lgrad r3d<3d> = L[1]
+zgrad r3d
+
+
+if(DS>0)
+{
+  dsl,  dgrad r2d
+  lo to dsl times DS
+
+}
+
+lgrad slice = NSLICES
+zslice
+
+;===============================================================================
+;	D/P               spec control          gradients	         
+;===============================================================================
+start, 	10u               fq8b:f1
+ 	d1		  fq1:f1                grad{( 0)| (0) |(t0)}	 
+       	d2 	          gatepulse 1
+        (p0:sp0 ph1):f1
+	d3                                      grad{(t2)| r2d(t3)|(t1)+r3d(t4)}
+	d5		                        groff 	                 
+	denab                       	        grad{(t5)| (0) | (0)} 
+	                  ADC_INIT_B(ph1, ph0)  
+	aqq               ADC_START
+	d3                                      grad{(t8)| r2d(t6) | r3d(t7) } 		
+	d6                                      grad{(t8)| (0) | (0) }
+	d7		                        groff 
+        d0                ADC_END               
+	d1		  fq1:f1                grad{( 0)| (0) |(t0)}	 
+       	d2 	          gatepulse 1
+        (p0:sp0 ph1):f1
+	d3                                      grad{(t2)| r2d(t3)|(t1)+r3d(t4)}
+	d5		                        groff 	                 
+	denab                       	        grad{(t5)| (0) | (0)} 
+	                  ADC_INIT_B(ph1, ph0)  
+	aqq               ADC_START
+	d3                                      grad{(t8)| r2d(t6) | r3d(t7) } 		
+	d6                                      grad{(t8)| (0) | (0) }
+	d7		                        groff 
+        d10                ADC_END               
+	1u                                      islice
+lo to start times NSLICES
+	1u		  ipp1                  zslice
+lo to start times NA
+	1u                rpp1                  igrad r2d
+lo to start times l3
+	1u                                      igrad r3d
+   "l3=l0"
+lo to start times l1
+lo to start times NAE
+SETUP_GOTO(start) 
+exit
+;============================================================
+;phase lists
+
+ph0 = 0
+ph1 = 0 2 1 3
+;============================================================
