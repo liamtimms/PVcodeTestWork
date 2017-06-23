@@ -165,8 +165,8 @@ void SetBasicParameters( void )
 
 void SetFrequencyParameters( void )
 {
-  int nslices;
-  int dim, i; //added these based on afi
+  //int nslices;
+  //int dim, i; //added these based on afi
 
   DB_MSG(("-->SetFrequencyParameters"));
 
@@ -214,17 +214,17 @@ void SetFrequencyParameters( void )
   ParxRelsParRelations("BF1", Yes); 
 
 
-  nslices = GTB_NumberOfSlices( PVM_NSPacks, PVM_SPackArrNSlices );
+  //nslices = GTB_NumberOfSlices( PVM_NSPacks, PVM_SPackArrNSlices );
  
   
-  ATB_SetAcqO1List( nslices,
-                    PVM_ObjOrderList,
-                    PVM_SliceOffsetHz );
+  //ATB_SetAcqO1List( nslices,
+  //                  PVM_ObjOrderList,
+  //                  PVM_SliceOffsetHz );
  
   
-  ATB_SetAcqO1BList( nslices,
-                     PVM_ObjOrderList,
-                     PVM_ReadOffsetHz);
+  //ATB_SetAcqO1BList( nslices,
+ //                   PVM_ObjOrderList,
+  //                  PVM_ReadOffsetHz);
  
   DB_MSG(("<--SetFrequencyParameters"));
 }
@@ -336,9 +336,9 @@ void SetPpgParameters(void)
 
   //D[0]  = ((PVM_RepetitionTime - PVM_MinRepetitionTime)/slices 
   //          + igwT + 0.01)/1000.0;  
-  D[0]  = ((PVM_TR1 - PVM_MinRepetitionTime)/slices 
+  D[0]  = ((Afi_TR1 - PVM_MinRepetitionTime)/slices 
             + igwT + 0.01)/1000.0;
-  D[10]  = ((PVM_TR2 - PVM_MinRepetitionTime)/slices 
+  D[10]  = ((Afi_TR2 - PVM_MinRepetitionTime)/slices 
             + igwT + 0.01)/1000.0;
             
             
