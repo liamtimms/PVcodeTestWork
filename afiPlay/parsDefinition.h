@@ -155,32 +155,32 @@ int parameter
  * AFI parameters
  * --------------------------------------------------------*/
 
-int parameter 
+double parameter 
 {
   display_name "AFI TR1";
   //relations backbone;
-  relations afi_TR1Rel
+  relations afi_TR1Rel;
   units "ms";
   format "%.3f";
-} afi_TR1;
+} Afi_TR1;
 
-int parameter 
+double parameter 
 {
   display_name "AFI TR2";
   //relations backbone;
-  relations afi_TR1Rel
+  relations afi_TR2Rel;
   units "ms";
   format "%.3f";
-} afi_TR2;
+} Afi_TR2;
 
-int parameter 
+double parameter 
 {
   display_name "AFI total TR";
   //relations backbone;
-  relations afi_total_TRRel
+  relations afi_total_TRRel;
   units "ms";
   format "%.3f";
-} afi_total_TR
+} Afi_total_TR;
 
 
 

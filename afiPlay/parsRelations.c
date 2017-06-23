@@ -74,13 +74,13 @@ void afi_TR1Range(void)
 {
 	DB_MSG(("-->afi_TR1Range"));
 	
-	if(ParxRelsParHasValue("afi_TR1")==No)
+	if(ParxRelsParHasValue("Afi_TR1")==No)
 	{
-		afi_TR1 = 30.0;
+		Afi_TR1 = 30.0;
 	}
 	else
 	{
-		afi_TR1 = MAX_OF(1e-3,afi_TR1);
+		Afi_TR1 = MAX_OF(1e-3,Afi_TR1);
 	}
 	
 	DB_MSG(("<--afi_TR1Range"));
@@ -102,13 +102,13 @@ void afi_TR2Range(void)
 {
 	DB_MSG(("-->afi_TR2Range"));
 	
-	if(ParxRelsParHasValue("afi_TR2")==No)
+	if(ParxRelsParHasValue("Afi_TR2")==No)
 	{
-		afi_TR2 = 150.0;
+		Afi_TR2 = 150.0;
 	}
 	else
 	{
-		afi_TR2 = MAX_OF(1e-3,afi_TR2); //might want to change this so that the min is TR1
+		Afi_TR2 = MAX_OF(1e-3,Afi_TR2); //might want to change this so that the min is TR1
 	}
 	
 	DB_MSG(("<--afi_TR2Range"));
@@ -130,13 +130,13 @@ void afi_total_TRRange(void)
 {
 	DB_MSG(("-->afi_total_TRRange"));
 	
-	if(ParxRelsParHasValue("afi_total_TR")==No)
+	if(ParxRelsParHasValue("Afi_total_TR")==No)
 	{
-		afi_total_TR = afi_TR1 + afi_TR2;
+		Afi_total_TR = Afi_TR1 + Afi_TR2;
 	}
 	else
 	{
-		afi_total_TR = MAX_OF(1e-3,afi_total_TR);
+		Afi_total_TR = MAX_OF(1e-3,Afi_total_TR);
 	}
 	
 	DB_MSG(("<--afi_total_TR"));

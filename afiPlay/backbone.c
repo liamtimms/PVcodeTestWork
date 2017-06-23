@@ -14,6 +14,7 @@
  * ***************************************************************/
 
 
+
 static const char resid[] = "$Id $ (c) 2007Bruker BioSpin MRI GmbH";
 
 #define DEBUG		0
@@ -39,7 +40,7 @@ void backbone(void)
   
   /* AFI sequence CHANGE */
   dim=PTB_GetSpatDim();
-  HandleParameterVisibility(dim);
+  //HandleParameterVisibility(dim);
 
   /* update encoding parameter group                          */
  
@@ -167,7 +168,7 @@ void backbone(void)
   UpdateTotalTR();
   
   //what is this function used in the afi?
-  Local_RFSpoilingRelation(); //can we modify this to do better spoiling
+  //Local_RFSpoilingRelation(); //can we modify this to do better spoiling
 
 
   PVM_NEchoImages = 1;
@@ -287,7 +288,7 @@ void UpdateTR1(void)
 	mindur = EncGradDur+riset;
 	mindur = MAX_OF(mindur, PVM_DigEndDelOpt);
 	
-	ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
+	//ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
 	
   PVM_MinRepetitionTime = 
     //nslices *
@@ -309,7 +310,7 @@ void UpdateTR1(void)
      * for multichannel acquisition in this function 
      */
      
-    afi_TR1 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
+    Afi_TR1 = MAX_OF(PVM_MinRepetitionTime,Afi_TR1);
     
     DB_MSG(("<--UpdateTR1"));
     return;    
@@ -329,7 +330,7 @@ void UpdateTR2(void)
 	mindur = EncGradDur+riset;
 	mindur = MAX_OF(mindur, PVM_DigEndDelOpt);
 	
-	ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur);
+	//ReadSpoilGradDur=MAX_OF(mindur,ReadSpoilDur); //ReadSpoilDur not defined
 	
   PVM_MinRepetitionTime = 
     //nslices *
@@ -351,13 +352,13 @@ void UpdateTR2(void)
      * for multichannel acquisition in this function 
      */
      
-    afi_TR2 = MAX_OF(PVM_MinRepetitionTime,afi_TR1);
+    Afi_TR2 = MAX_OF(PVM_MinRepetitionTime,Afi_TR1);
     
     DB_MSG(("<--UpdateTR2"));
     return;    
 }
 
-void UpdateTotalTR(void);
+void UpdateTotalTR(void)
 {
 	int nslices, dim;
 	double TotalTime;
@@ -366,21 +367,21 @@ void UpdateTotalTR(void);
 	
 	nslices=GTB_NumberOfSlices( PVM_NSPacks, PVM_SPackArrNSlices );
 	
-	afi_total_TR = nslices*(afi_TR1+afi_TR2);
+	Afi_total_TR = nslices*(Afi_TR1+Afi_TR2);
 	
 	dim=PTB_GetSpatDim();
-	TotalTime = afi_total_TR *
+	TotalTime = Afi_total_TR *
 				PVM_EncMatrix[1] *
 				PVM_NAverages;
 				
 	if(dim == 3)
 	{
-		TotalTime *= PVM_EncMatrix[2] //wait, what???
+		TotalTime *= PVM_EncMatrix[2]; //wait, what???
 	}
 	
 	PVM_ScanTime = TotalTime; //this line wasn't in the afi but seems
 	//like something that should be here based on the GRE
-	UT_ScabTimeStr(PVM_ScanTimeStr,TotalTime);
+	//UT_ScabTimeStr(PVM_ScanTimeStr,TotalTime); //undeclared, what is this?
 	ParxRelsShowInEditor("PVM_ScanTimeStr");
 	ParxRelsMakeNonEditable("PVM_ScanTimeStr");
 	
